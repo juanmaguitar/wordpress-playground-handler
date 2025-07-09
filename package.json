@@ -1,6 +1,26 @@
 {
   "name": "wordpress-playground-handler",
   "version": "1.0.0",
+  "description": "A Node.js library for creating and managing WordPress Playground instances with PHP request handling capabilities",
+  "keywords": [
+    "wordpress",
+    "playground",
+    "php",
+    "wasm",
+    "request-handler",
+    "blueprint",
+    "development",
+    "testing"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/juanmaguitar/wordpress-playground-handler"
+  },
+  "author": {
+    "name": "JuanMa Garrido",
+    "email": "JuanMa.Garrido@gmail.com"
+  },
+  "license": "MIT",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
@@ -13,6 +33,7 @@
     "dist",
     "README.md"
   ],
+  "type": "module",
   "scripts": {
     "build": "tsc -p config/tsconfig.json",
     "start": "rm -rf dist && npm run build && node dist/index.js",
@@ -26,20 +47,6 @@
     "@wp-playground/cli": "1.1.5",
     "fs-extra": "^11.3.0"
   },
-  "type": "module",
-  "keywords": [
-    "wordpress",
-    "playground",
-    "php",
-    "wasm",
-    "request-handler",
-    "blueprint",
-    "development",
-    "testing"
-  ],
-  "author": "",
-  "license": "MIT",
-  "description": "A Node.js library for creating and managing WordPress Playground instances with PHP request handling capabilities",
   "devDependencies": {
     "@types/fs-extra": "^11.0.4",
     "@types/node": "^20.0.0",
