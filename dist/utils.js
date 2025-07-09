@@ -2,6 +2,7 @@
 export const requestFollowRedirects = async (handler, request) => {
     let response = await handler.request(request);
     while ([301, 302].includes(response.httpStatusCode) &&
+        response.headers["location"] &&
         response.headers["location"].length === 1) {
         response = await requestFollowRedirects(handler, {
             url: response.headers["location"][0],

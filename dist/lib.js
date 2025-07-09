@@ -14,7 +14,7 @@ export async function getPlaygroundHandler(options = {}) {
         else {
             blueprint = JSON.parse(readFileSync(resolve("./wordpress/blueprint.json"), "utf8"));
         }
-        cachedHandler = getSingletonHandlerPromise(blueprint);
+        cachedHandler = getSingletonHandlerPromise(blueprint, options.mountPaths);
     }
     return cachedHandler;
 }

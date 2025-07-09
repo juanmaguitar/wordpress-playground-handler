@@ -4,9 +4,15 @@ import { getSingletonHandlerPromise } from "./playgroundHandler.js";
 import { readFileSync } from "fs";
 import { resolve } from "path";
 
+export interface MountPaths {
+  databasePath?: string;
+  muPluginsPath?: string;
+}
+
 export interface PlaygroundOptions {
   blueprintPath?: string;
   blueprint?: Blueprint;
+  mountPaths?: MountPaths;
 }
 
 let cachedHandler: Promise<PHPRequestHandler> | null = null;
@@ -27,7 +33,7 @@ export async function getPlaygroundHandler(options: PlaygroundOptions = {}): Pro
       ) as Blueprint;
     }
     
-    cachedHandler = getSingletonHandlerPromise(blueprint);
+    cachedHandler = getSingletonHandlerPromise(blueprint, options.mountPaths);
   }
   
   return cachedHandler;

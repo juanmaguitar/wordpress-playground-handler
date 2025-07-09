@@ -10,8 +10,13 @@ import { compileBlueprint, runBlueprintSteps } from "@wp-playground/blueprints";
 import {fetchFileAsFileObject} from "./utils.js";
 import { Blueprint } from "@wp-playground/blueprints";
 
+interface MountPaths {
+  databasePath?: string;
+  muPluginsPath?: string;
+}
+
 // Move all logic into a function and export it
-export async function createPlaygroundRequestHandler(blueprint: Blueprint): Promise<PHPRequestHandler> {
+export async function createPlaygroundRequestHandler(blueprint: Blueprint, mountPaths?: MountPaths): Promise<PHPRequestHandler> {
   
 
   const wpDetails = await resolveWordPressRelease("6.8");
@@ -44,17 +49,22 @@ export async function createPlaygroundRequestHandler(blueprint: Blueprint): Prom
   });
 
   const php = await requestHandler.getPrimaryPhp();
-  php.mkdir("/wordpress/wp-content/database/");   
-  php.mount(
-    "/wordpress/wp-content/database/",
-    createNodeFsMountHandler("./wordpress/database/")
-  );
+  
+  if (mountPaths?.databasePath) {
+    php.mkdir("/wordpress/wp-content/database/");   
+    php.mount(
+      "/wordpress/wp-content/database/",
+      createNodeFsMountHandler(mountPaths.databasePath)
+    );
+  }
 
-  php.mkdir("/wordpress/wp-content/mu-plugins/");
-  php.mount(
-    "/wordpress/wp-content/mu-plugins/",
-    createNodeFsMountHandler("./wordpress/mu-plugins/")
-  );
+  if (mountPaths?.muPluginsPath) {
+    php.mkdir("/wordpress/wp-content/mu-plugins/");
+    php.mount(
+      "/wordpress/wp-content/mu-plugins/",
+      createNodeFsMountHandler(mountPaths.muPluginsPath)
+    );
+  }
   
   const compiledBlueprint = await compileBlueprint(blueprint);  
   await runBlueprintSteps(compiledBlueprint, php);

@@ -4,7 +4,11 @@ import { resolve } from "path";
     try {
         // Get the Playground handler - this will initialize it only once
         const requestHandler = await getPlaygroundHandler({
-            blueprintPath: resolve("./wordpress/blueprint.json")
+            blueprintPath: resolve("./wordpress/blueprint.json"),
+            mountPaths: {
+                databasePath: resolve("./wordpress/database/"),
+                muPluginsPath: resolve("./wordpress/mu-plugins/")
+            }
         });
         // Example 1: Get JWT token
         const reqGetToken = {

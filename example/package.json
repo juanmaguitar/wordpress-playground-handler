@@ -9,7 +9,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "demo-playground-cli-mount-db": "file:.."
+    "wordpress-playground-handler": "file:.."
   },
   "devDependencies": {
     "typescript": "^5.0.0"

@@ -1,140 +1,201 @@
-# demo-playground-cli-mount-db
+# WordPress Playground Handler
 
-This project demonstrates how to boot a WordPress Playground instance in Node.js **without an HTTP server** (no Express), and how to make direct requests to the Playground's PHP runtime using the request handler API. It is designed for advanced use cases where you want to interact with WordPress programmatically, mount custom directories, or run headless tests.
-
----
+A Node.js library for building serverless Headless WordPress applications without PHP server dependencies. By leveraging WordPress Playground's PHP runtime directly in Node.js, this package enables you to create Headless WordPress apps that can be deployed to platforms like Vercel - no PHP server or WordPress installation required. Simply make direct requests to WordPress's APIs and runtime from your Node.js code.
 
 ## Features
 
-- Boots WordPress Playground in a Node.js environment.
-- No HTTP server required—interact directly with the Playground API.
-- **Dynamically fetches the latest WordPress release and SQLite Integration plugin.**
-- Supports mounting local directories (e.g., for database or plugin development).
-- Example of making direct PHP/HTTP requests to the Playground, including REST API endpoints.
-- Blueprint-driven setup: install plugins, define constants, run setup steps, and write files.
-- Utility functions for file fetching and following HTTP redirects.
-
----
-
-## Prerequisites
-
-- Node.js v22+ 
-- npm
-
----
+- 🚀 **Singleton Pattern**: Efficiently manages Playground instances with automatic caching
+- 🔧 **Blueprint Support**: Configure WordPress setup, plugins, and constants via blueprints
+- 📁 **Directory Mounting**: Mount local directories (database, plugins, themes, etc.)
+- 🌐 **Direct API Access**: Make requests directly to WordPress REST API and PHP runtime
+- 📦 **TypeScript Ready**: Full TypeScript support with comprehensive type definitions
+- ⚡ **Dynamic WordPress**: Automatically fetches latest WordPress releases and plugins
+- 🧪 **Testing Friendly**: Perfect for headless testing and automation
 
 ## Installation
 
-1. **Clone the repository** (if you haven't already):
+```bash
+npm install wordpress-playground-handler
+```
 
-   ```sh
-   git clone <your-repo-url>
-   cd demo-playground-cli-mount-db
-   ```
+## Quick Start
 
-2. **Install dependencies:**
+```typescript
+import { getPlaygroundHandler, PHPRequest } from 'wordpress-playground-handler';
 
-   ```sh
-   npm install
-   ```
+// Initialize WordPress Playground (singleton - only initializes once)
+const handler = await getPlaygroundHandler();
 
----
+// Make requests to WordPress
+const response = await handler.request({
+  method: 'GET',
+  url: '/wp-json/wp/v2/posts'
+} as PHPRequest);
 
-## Usage
+console.log(JSON.parse(response.text));
+```
 
-### 1. Prepare your blueprint
+## API Reference
 
-Edit `blueprint.json` to define your desired WordPress setup, plugins, constants, and configuration.  
-You can also customize the `database/` directory to mount your own files into the Playground.
+### `getPlaygroundHandler(options?: PlaygroundOptions)`
 
-Example `blueprint.json`:
+Returns a Promise that resolves to a PHPRequestHandler. Uses singleton pattern for efficient resource management.
 
-```json
-{
-  "steps": [
-    { "step": "runWpInstallationWizard", "options": {} },
-    {
-      "step": "installPlugin",
-      "pluginData": {
-        "resource": "wordpress.org/plugins",
-        "slug": "jwt-authentication-for-wp-rest-api"
-      }
-    },
-    {
-      "step": "defineWpConfigConsts",
-      "consts": {
-        "JWT_AUTH_SECRET_KEY": "your-top-secret-key",
-        "JWT_AUTH_CORS_ENABLE": true
-      }
-    },
-    {
-      "step": "writeFile",
-      "path": "/wordpress/wp-content/mu-plugins/rewrite.php",
-      "data": "<?php add_action( 'after_setup_theme', function() { global $wp_rewrite; $wp_rewrite->set_permalink_structure('/%postname%/'); $wp_rewrite->flush_rules(); } );"
-    }
-  ]
+#### Options
+
+```typescript
+interface PlaygroundOptions {
+  blueprintPath?: string;    // Path to blueprint.json file
+  blueprint?: Blueprint;     // Blueprint object (takes precedence over blueprintPath)
+  mountPaths?: MountPaths;   // Local directories to mount
+}
+
+interface MountPaths {
+  databasePath?: string;     // Mount database directory
+  muPluginsPath?: string;    // Mount mu-plugins directory
 }
 ```
 
-### 2. Build and run
+If no options are provided, defaults to `./wordpress/blueprint.json`.
 
-To build the TypeScript code and launch the Playground:
+### Exported Types
 
-```sh
-npm start
-```
+- `PHPRequestHandler` - Main handler for making requests
+- `PHPRequest` - Request interface
+- `PHPResponse` - Response interface  
+- `Blueprint` - Blueprint configuration interface
 
-This will:
-- Compile the TypeScript files to `dist/`
-- Dynamically fetch the latest WordPress release and the SQLite Integration plugin
-- Boot the Playground
-- Mount the `database/` directory into `/wordpress/wp-content/database/` inside the Playground
-- Run all blueprint steps (install plugins, define constants, write files, etc.)
-- Make a sample request to `/wp-json/wp/v2/posts` and print the response
+## Usage Examples
 
----
+### Basic Setup with Blueprint
 
-## Example: Making a Request
+```typescript
+import { getPlaygroundHandler, Blueprint } from 'wordpress-playground-handler';
 
-After booting, you can make requests like this (see `src/index.ts`):
-
-```ts
-const req = {
-  method: "GET",
-  url: "/wp-json/wp/v2/posts",
-  headers: {}
+const blueprint: Blueprint = {
+  steps: [
+    { step: "runWpInstallationWizard", options: {} },
+    {
+      step: "installPlugin",
+      pluginData: {
+        resource: "wordpress.org/plugins",
+        slug: "akismet"
+      }
+    },
+    {
+      step: "defineWpConfigConsts",
+      consts: {
+        "JWT_AUTH_SECRET_KEY": "your-secret-key",
+        "JWT_AUTH_CORS_ENABLE": true
+      }
+    }
+  ]
 };
-const res = await requestHandler.request(req);
-console.log("Response:", res.text, res.httpStatusCode, res.headers);
+
+const handler = await getPlaygroundHandler({ blueprint });
 ```
 
-Or, to follow redirects automatically:
+### Mounting Local Directories
 
-```ts
-import { requestFollowRedirects } from "./utils";
-const res = await requestFollowRedirects(requestHandler, req);
+```typescript
+import { getPlaygroundHandler } from 'wordpress-playground-handler';
+import { resolve } from 'path';
+
+const handler = await getPlaygroundHandler({
+  blueprintPath: './wordpress/blueprint.json',
+  mountPaths: {
+    databasePath: resolve('./database'),
+    muPluginsPath: resolve('./mu-plugins')
+  }
+});
 ```
 
----
+### JWT Authentication Flow
 
-## Customization
+```typescript
+import { getPlaygroundHandler, PHPRequest } from 'wordpress-playground-handler';
 
-- **WordPress Version:** Change the version in `resolveWordPressRelease("6.8")` in `index.ts`.
-- **Plugins:** Add plugin install steps in `blueprint.json`.
-- **Constants:** Define WP config constants in `blueprint.json`.
-- **Mounts:** Edit the mount logic in `index.ts` to mount other directories.
-- **Blueprint:** Use blueprint steps to install plugins, define constants, or run setup steps.
-- **Multiple Workers:** For advanced use, you can extend the logic to support multiple PHP workers.
+const handler = await getPlaygroundHandler();
 
----
+// Get JWT token
+const tokenResponse = await handler.request({
+  method: "POST",
+  url: "/wp-json/jwt-auth/v1/token",
+  headers: { "Content-Type": "application/json" },
+  body: {
+    username: "admin",
+    password: "password"
+  }
+} as PHPRequest);
 
-## References
-- [`wordpress-playground/packages/playground/cli/src/run-cli.ts`](https://github.com/WordPress/wordpress-playground/blob/70d54903540a136c160a112393b35018356c86da/packages/playground/cli/src/run-cli.ts#L562-L596) 
-- [WordPress Playground repo](https://github.com/WordPress/wordpress-playground)
-- [WordPress Playground documentation](https://wordpress.github.io/wordpress-playground/)
+const { token } = JSON.parse(tokenResponse.text);
 
----
+// Use token for authenticated requests
+const userResponse = await handler.request({
+  method: "GET",
+  url: "/wp-json/wp/v2/users/me",
+  headers: { "Authorization": `Bearer ${token}` }
+} as PHPRequest);
+
+console.log('User info:', JSON.parse(userResponse.text));
+```
+
+### Custom REST API Endpoints
+
+```typescript
+// Create a post
+const createPost = await handler.request({
+  method: "POST",
+  url: "/wp-json/wp/v2/posts",
+  headers: {
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${token}`
+  },
+  body: {
+    title: "My New Post",
+    content: "This is the post content",
+    status: "publish"
+  }
+} as PHPRequest);
+
+// Get all posts
+const getPosts = await handler.request({
+  method: "GET",
+  url: "/wp-json/wp/v2/posts"
+} as PHPRequest);
+```
+
+## Development
+
+To work on this package locally:
+
+```bash
+git clone <repository-url>
+cd wordpress-playground-handler
+npm install
+npm run build
+npm test
+```
+
+### Running the Example
+
+```bash
+npm run example
+```
+
+This runs the example in the `example/` directory which demonstrates typical usage patterns.
+
+## Requirements
+
+- Node.js v18+
+- NPM or Yarn
 
 ## License
 
-ISC 
+MIT
+
+## References
+
+- [WordPress Playground Repository](https://github.com/WordPress/wordpress-playground)
+- [WordPress Playground Documentation](https://wordpress.github.io/wordpress-playground/)
+- [WordPress REST API](https://developer.wordpress.org/rest-api/) 

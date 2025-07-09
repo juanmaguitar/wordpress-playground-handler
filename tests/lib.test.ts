@@ -13,7 +13,7 @@ describe('getPlaygroundHandler', () => {
 
   it('should return a PHPRequestHandler instance', async () => {
     handler1 = await getPlaygroundHandler({
-      blueprintPath: './wordpress/blueprint.json'
+      blueprintPath: './example/wordpress/blueprint.json'
     });
     
     expect(handler1).toBeDefined();
@@ -23,7 +23,7 @@ describe('getPlaygroundHandler', () => {
 
   it('should return the same instance when called multiple times (singleton)', async () => {
     handler2 = await getPlaygroundHandler({
-      blueprintPath: './wordpress/blueprint.json'
+      blueprintPath: './example/wordpress/blueprint.json'
     });
     
     expect(handler2).toBe(handler1);

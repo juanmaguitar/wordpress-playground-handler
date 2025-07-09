@@ -4,7 +4,7 @@ import { rootCertificates } from "tls";
 import { compileBlueprint, runBlueprintSteps } from "@wp-playground/blueprints";
 import { fetchFileAsFileObject } from "./utils.js";
 // Move all logic into a function and export it
-export async function createPlaygroundRequestHandler(blueprint) {
+export async function createPlaygroundRequestHandler(blueprint, mountPaths) {
     const wpDetails = await resolveWordPressRelease("6.8");
     const wordPressZip = await fetchFileAsFileObject(wpDetails.releaseUrl, `${wpDetails.version}.zip`);
     const sqliteIntegrationPluginZip = await fetchFileAsFileObject("https://github.com/WordPress/sqlite-database-integration/archive/refs/heads/develop.zip", "sqlite.zip");
@@ -25,14 +25,16 @@ export async function createPlaygroundRequestHandler(blueprint) {
         cookieStore: false,
     });
     const php = await requestHandler.getPrimaryPhp();
-    php.mkdir("/wordpress/wp-content/database/");
-    php.mount("/wordpress/wp-content/database/", createNodeFsMountHandler("./wordpress/database/"));
-    php.mkdir("/wordpress/wp-content/mu-plugins/");
-    php.mount("/wordpress/wp-content/mu-plugins/", createNodeFsMountHandler("./wordpress/mu-plugins/"));
+    if (mountPaths?.databasePath) {
+        php.mkdir("/wordpress/wp-content/database/");
+        php.mount("/wordpress/wp-content/database/", createNodeFsMountHandler(mountPaths.databasePath));
+    }
+    if (mountPaths?.muPluginsPath) {
+        php.mkdir("/wordpress/wp-content/mu-plugins/");
+        php.mount("/wordpress/wp-content/mu-plugins/", createNodeFsMountHandler(mountPaths.muPluginsPath));
+    }
     const compiledBlueprint = await compileBlueprint(blueprint);
     await runBlueprintSteps(compiledBlueprint, php);
-    console.log(php.listFiles("/wordpress/wp-content/mu-plugins/"));
-    console.log(php.readFileAsText("/wordpress/wp-content/mu-plugins/extended-user-info-rest.php"));
     return requestHandler;
 }
 //# sourceMappingURL=playground.js.map

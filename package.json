@@ -14,12 +14,12 @@
     "README.md"
   ],
   "scripts": {
-    "build": "tsc",
+    "build": "tsc -p config/tsconfig.json",
     "start": "rm -rf dist && npm run build && node dist/index.js",
     "example": "cd example && npm start",
-    "test": "vitest",
-    "test:ui": "vitest --ui",
-    "test:run": "vitest run",
+    "test": "vitest --config config/vitest.config.ts --reporter=verbose",
+    "test:ui": "vitest --ui --config config/vitest.config.ts",
+    "test:run": "vitest run --config config/vitest.config.ts",
     "prepublishOnly": "npm run build && npm run test:run"
   },
   "dependencies": {
