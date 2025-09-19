@@ -1,7 +1,7 @@
 {
   "name": "wordpress-playground-handler",
   "version": "1.1.2",
-  "description": "A Node.js library for creating and managing WordPress Playground instances with PHP request handling capabilities",
+  "description": "A Node.js library for creating and managing WordPress Playground instances with PHP request handling capabilities. Optimized for Node.js runtime environments.",
   "keywords": [
     "wordpress",
     "playground",
@@ -10,7 +10,9 @@
     "request-handler",
     "blueprint",
     "development",
-    "testing"
+    "testing",
+    "nodejs",
+    "serverless"
   ],
   "repository": {
     "type": "git",
