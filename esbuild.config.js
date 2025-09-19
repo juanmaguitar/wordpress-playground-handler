@@ -11,7 +11,12 @@ const external = [
   'fs', 'path', 'crypto', 'stream', 'util', 'os', 'tls', 'url', 'buffer',
   // Native modules and patterns
   '*.node',
-  'fs-ext'
+  '*.wasm',
+  'fs-ext',
+  // Exclude large PHP WASM packages
+  '@php-wasm/node',
+  '@php-wasm/web',
+  '@php-wasm/universal'
 ];
 
 const isProduction = process.env.NODE_ENV === 'production';
@@ -30,23 +35,8 @@ const config = {
   keepNames: true,           // Keep function names for better debugging
   logLevel: 'info',
   packages: 'external',      // Mark all packages as external for Node.js libraries
-  // Generate type definitions using TypeScript
-  plugins: [{
-    name: 'typescript-declarations',
-    setup(build) {
-      build.onEnd(async () => {
-        if (isProduction) {
-          const { exec } = await import('child_process');
-          const { promisify } = await import('util');
-          const execAsync = promisify(exec);
-          
-          // Generate type declarations
-          await execAsync('tsc -p config/tsconfig.prod.json --emitDeclarationOnly');
-          console.log('✓ Type declarations generated');
-        }
-      });
-    },
-  }],
+  // Skip type declarations for now due to version conflicts
+  plugins: [],
 };
 
 try {

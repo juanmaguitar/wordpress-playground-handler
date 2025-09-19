@@ -1,9 +1,9 @@
 import { createNodeFsMountHandler, loadNodeRuntime } from "@php-wasm/node";
+import { PHPRequestHandler } from "@php-wasm/universal";
 import {
   bootWordPress,
   resolveWordPressRelease
 } from "@wp-playground/wordpress";
-import { PHPRequestHandler } from "@php-wasm/universal";
 import { rootCertificates } from "tls";
 
 import { compileBlueprint, runBlueprintSteps } from "@wp-playground/blueprints";
