@@ -1,15 +1,11 @@
-# Exclude large PHP WASM binaries (300MB+ total)
+# Exclude large WASM binaries specifically
 node_modules/@php-wasm/node/asyncify/
 node_modules/@php-wasm/node/jspi/
 node_modules/@php-wasm/web/
-node_modules/@php-wasm/*/*.wasm
-node_modules/@php-wasm/*/*.node
+node_modules/@php-wasm/**/*.wasm
+node_modules/@php-wasm/**/*.node
 
-# Exclude WordPress Playground assets
-node_modules/@wp-playground/*/wasm/
-node_modules/@wp-playground/*/assets/
-
-# Exclude development dependencies
+# Exclude development dependencies  
 node_modules/@types/
 node_modules/typescript/
 node_modules/vitest/
@@ -17,12 +13,11 @@ node_modules/@vitest/
 node_modules/ts-node/
 node_modules/esbuild/
 
-# Exclude testing files
+# Exclude build artifacts and tests
 tests/
 *.test.*
 vitest.config.*
-
-# Exclude source files (use built dist/ instead)
 src/
 config/
 esbuild.config.js
+package.serverless.json

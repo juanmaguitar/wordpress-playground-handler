@@ -1,0 +1,26 @@
+{
+  "functions": {
+    "pages/api/**/*.js": {
+      "runtime": "edge"
+    },
+    "api/**/*.js": {
+      "runtime": "edge"
+    }
+  },
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/node",
+      "config": {
+        "includeFiles": "dist/**",
+        "excludeFiles": [
+          "node_modules/@php-wasm/node/asyncify/**",
+          "node_modules/@php-wasm/node/jspi/**", 
+          "node_modules/@php-wasm/web/**",
+          "node_modules/@php-wasm/**/*.wasm",
+          "node_modules/@php-wasm/**/*.node"
+        ]
+      }
+    }
+  ]
+}

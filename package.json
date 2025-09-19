@@ -55,6 +55,18 @@
     "@php-wasm/universal": "1.1.5",
     "fs-extra": "^11.3.0"
   },
+  "peerDependencies": {
+    "@php-wasm/node": "1.1.5",
+    "@php-wasm/universal": "1.1.5"
+  },
+  "peerDependenciesMeta": {
+    "@php-wasm/node": {
+      "optional": true
+    },
+    "@php-wasm/universal": {
+      "optional": true
+    }
+  },
   "devDependencies": {
     "@types/fs-extra": "^11.0.4",
     "@types/node": "^20.0.0",
