@@ -10,7 +10,7 @@ describe('WordPress API functionality', () => {
     handler = await getPlaygroundHandler({
       blueprintPath: './example/wordpress/blueprint.json',
       mountPaths: {
-        databasePath: resolve('./example/wordpress/database/'),
+        // databasePath: resolve('./example/wordpress/database/'),
         muPluginsPath: resolve('./example/wordpress/mu-plugins/')
       }
     });

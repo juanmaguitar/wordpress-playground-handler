@@ -12,6 +12,7 @@
     "wordpress-playground-handler": "file:.."
   },
   "devDependencies": {
+    "esbuild": "^0.25.10",
     "typescript": "^5.0.0"
   }
 }

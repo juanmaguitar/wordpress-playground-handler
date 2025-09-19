@@ -1,4 +1,4 @@
-import { getPlaygroundHandler } from "demo-playground-cli-mount-db";
+import { getPlaygroundHandler } from "wordpress-playground-handler";
 import { resolve } from "path";
 (async () => {
     try {

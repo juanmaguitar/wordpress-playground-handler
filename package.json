@@ -1,6 +1,6 @@
 {
   "name": "wordpress-playground-handler",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A Node.js library for creating and managing WordPress Playground instances with PHP request handling capabilities",
   "keywords": [
     "wordpress",
@@ -14,7 +14,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/juanmaguitar/wordpress-playground-handler"
+    "url": "git+https://github.com/juanmaguitar/wordpress-playground-handler.git"
   },
   "author": {
     "name": "JuanMa Garrido",
@@ -35,8 +35,11 @@
   ],
   "type": "module",
   "scripts": {
-    "build": "tsc -p config/tsconfig.json",
-    "start": "rm -rf dist && npm run build && node dist/index.js",
+    "build": "NODE_ENV=production node esbuild.config.js",
+    "build:dev": "node esbuild.config.js",
+    "build:tsc": "tsc -p config/tsconfig.prod.json",
+    "build:tsc:dev": "tsc -p config/tsconfig.json",
+    "start": "rm -rf dist && npm run build:dev && node dist/index.js",
     "example": "cd example && npm start",
     "test": "vitest --config config/vitest.config.ts --reporter=verbose",
     "test:ui": "vitest --ui --config config/vitest.config.ts",
@@ -44,7 +47,10 @@
     "prepublishOnly": "npm run build && npm run test:run"
   },
   "dependencies": {
-    "@wp-playground/cli": "1.1.5",
+    "@expreva/php-wasm-8-0": "^1.0.29-alpha.2",
+    "@php-wasm/universal": "1.1.5",
+    "@wp-playground/blueprints": "1.1.5",
+    "@wp-playground/wordpress": "1.1.5",
     "fs-extra": "^11.3.0"
   },
   "devDependencies": {
